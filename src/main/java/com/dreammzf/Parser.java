@@ -229,7 +229,7 @@ public class Parser implements IParser {
                 System.out.println("-------------------------");
                 try {
                     if (!db.newsExists(title, newsUrl)) {
-                        db.insertNews(title, description, url, categoryName, date, imageUrl, "The Guardian");;
+                        db.insertNews(title, description, url, categoryName, date, imageUrl, "The Guardian");
                     }   } catch (SQLException e) {
                     System.out.println("Failed to insert news");
                 }
