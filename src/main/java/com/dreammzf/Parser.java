@@ -1,6 +1,7 @@
 package com.dreammzf;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -75,13 +76,12 @@ public class Parser implements IParser {
                         views = data[2];
                     }
                     default -> {
-                        date = data[0] + " " + data[1];
+                        date = data[0];
                         views = data[1];
                     }
                 }
                 System.out.println("Дата публикации: " + date);
                 System.out.println("Просмотры: " + views); 
-                db.insertNews(title, description, url, categoryName.split(" ")[0], date, imageUrl, "РИА Новости");
                 System.out.println("Ссылка: " + newsUrl);
                 if (!imageUrl.isEmpty()) {
                     System.out.println("Изображение: " + imageUrl);
@@ -94,6 +94,12 @@ public class Parser implements IParser {
                     System.out.println("Краткое описание отсутствует");
                 }
                 System.out.println("-------------------------");
+                try {
+                    if (!db.newsExists(title, newsUrl)) {
+                        db.insertNews(title, description, url, categoryName.split(" ")[0], date, imageUrl, "РИА Новости");
+                    }   } catch (SQLException e) {
+                    System.out.println("Failed to insert news");
+                }
                 count++;
                 if (count == amount) {
                     return;
@@ -140,7 +146,6 @@ public class Parser implements IParser {
                 if (!imageUrl.isEmpty()) analytics.countNewsWithImages();
                 analytics.countSource("Lenta.ru");
                 analytics.countCategory(categoryName);
-                db.insertNews(title, description, url, categoryName, date, imageUrl, "РИА Новости");
                 System.out.println("Заголовок: " + title);
                 System.out.println("Категория: " + categoryName);
                 System.out.println("Дата публикации: " + date);
@@ -156,6 +161,12 @@ public class Parser implements IParser {
                     System.out.println("Краткое описание отсутствует");
                 }
                 System.out.println("-------------------------");
+                try {
+                    if (!db.newsExists(title, newsUrl)) {
+                        db.insertNews(title, description, url, categoryName, date, imageUrl, "Lenta.ru");
+                    }   } catch (SQLException e) {
+                    System.out.println("Failed to insert news");
+                }
                 count++;
                 if (count == amount) {
                     return;
@@ -201,7 +212,6 @@ public class Parser implements IParser {
                 if (!imageUrl.isEmpty()) analytics.countNewsWithImages();
                 analytics.countSource("The Guardian");
                 analytics.countCategory(categoryName);
-                db.insertNews(title, description, url, categoryName, date, imageUrl, "РИА Новости");
                 System.out.println("Заголовок: " + title);
                 System.out.println("Категория: " + categoryName.substring(0, 1).toUpperCase() + categoryName.substring(1));
                 System.out.println("Дата публикации: " + date);
@@ -217,6 +227,12 @@ public class Parser implements IParser {
                     System.out.println("Краткое описание отсутствует");
                 }
                 System.out.println("-------------------------");
+                try {
+                    if (!db.newsExists(title, newsUrl)) {
+                        db.insertNews(title, description, url, categoryName, date, imageUrl, "The Guardian");;
+                    }   } catch (SQLException e) {
+                    System.out.println("Failed to insert news");
+                }
                 count++;
                 if (count == amount) {
                     return;
@@ -261,7 +277,6 @@ public class Parser implements IParser {
                 analytics.countSource("Вести");
                 analytics.countCategory(categoryName);
                 String date = item.select(".list__date").text() + " " + item.select(".list__time").text();
-                db.insertNews(title, description, url, categoryName, date, imageUrl, "РИА Новости");
                 System.out.println("Заголовок: " + title);
                 System.out.println("Категория: " + categoryName.split(" ")[0].substring(0, 1).toUpperCase()+categoryName.split(" ")[0].substring(1));
                 System.out.println("Дата публикации: " + date);
@@ -276,11 +291,17 @@ public class Parser implements IParser {
                 } else {
                     System.out.println("Краткое описание отсутствует");
                 }
+                System.out.println("-------------------------");
+                try {
+                    if (!db.newsExists(title, newsUrl)) {
+                        db.insertNews(title, description, url, categoryName, date, imageUrl, "Вести");
+                    }   } catch (SQLException e) {
+                    System.out.println("Failed to insert news");
+                }
                 count++;
                 if (count == amount) {
                     return;
                 }
-                System.out.println("-------------------------");
             }
         } catch (IOException e) {
                 System.err.println("Ошибка при парсинге Вести (" + requiredCategory + "): " + e.getMessage());
@@ -324,7 +345,6 @@ public class Parser implements IParser {
                 String dateTimeSource = item.select("time").attr("datetime");
                 String[] dateTime = dateTimeSource.split("T");
                 String date = dateTime[0] + " " + dateTime[1].split("\\+")[0];
-                db.insertNews(title, "", url, requiredCategory.substring(0, 1).toUpperCase() + requiredCategory.substring(1), date, imageUrl, "РИА Новости");
                 System.out.println("Заголовок: " + title);
                 System.out.println("Категория: " + requiredCategory.substring(0, 1).toUpperCase() + requiredCategory.substring(1));
                 System.out.println("Дата публикации: " + date);
@@ -340,6 +360,12 @@ public class Parser implements IParser {
                     System.out.println("Краткое описание отсутствует");
                 }
                 System.out.println("-------------------------");
+                try {
+                    if (!db.newsExists(title, newsUrl)) {
+                        db.insertNews(title, "", url, requiredCategory.substring(0, 1).toUpperCase() + requiredCategory.substring(1), date, imageUrl, "Газета.ру");
+                    }   } catch (SQLException e) {
+                    System.out.println("Failed to insert news");
+                }
                 count++;
                 if (count == amount) {
                     return;
