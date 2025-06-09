@@ -96,6 +96,16 @@ public class Database {
         }
     }
 
+    public boolean newsExists(String title, String url) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement("SELECT 1 FROM news WHERE title = ? OR url = ? LIMIT 1")) {   
+            stmt.setString(1, title);
+            stmt.setString(2, url);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
     public void insertNews(String title, String description, String url, String category, String publishDate, String imageUrl, String source) {
         String insert = "INSERT INTO news (title, description, url, category, publish_date, image_url, source) " + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(insert)) {
