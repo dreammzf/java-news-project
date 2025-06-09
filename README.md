@@ -19,3 +19,5 @@ JDK 24.0.1, запускается через maven
 Jsoup (Parser.java)
 sql (Database.java)
 json (FileExporter.java)
+
+Юнит тесты: AppTest.java ✅
